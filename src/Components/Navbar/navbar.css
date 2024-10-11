@@ -1,0 +1,33 @@
+/* Basic styling for the navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #4B0082; /* Dark purple */
+  }
+  
+  .logo img {
+    height: 40px; /* Adjust based on your logo size */
+  }
+  
+  .nav-links {
+    display: flex;
+    list-style: none;
+  }
+  
+  .nav-item {
+    margin-left: 20px;
+    padding: 10px 20px;
+    background-color: #007BFF; /* Blue box for links */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  
+  .nav-item:hover {
+    background-color: #0056b3; /* Slightly darker blue on hover */
+  }
+  
+  
+  

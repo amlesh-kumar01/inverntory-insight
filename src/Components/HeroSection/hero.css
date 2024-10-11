@@ -1,0 +1,97 @@
+/* Base styles */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 50px;
+    background-color: #f0f0f0;
+    
+  }
+  
+  .hero-content {
+    max-width: 50%;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    animation: fadeInLeft 1s ease-in-out;
+  }
+  
+  .hero-description {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    animation: fadeInLeft 1.5s ease-in-out;
+  }
+  
+  /* .hero-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    cursor: pointer;
+    animation: fadeInLeft 2s ease-in-out;
+  } */
+  .track-link {
+    font-size: 1.2rem;
+    color: white;
+    text-decoration: none;
+    border: 2px solid #007bff;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    background-color: #007bff;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.track-link:hover {
+    background-color: white;
+    color: #007bff;
+}
+  
+  .hero-image img {
+    max-width: 100%;
+    height: auto;
+    animation: fadeInRight 1s ease-in-out;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .hero {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .hero-content {
+      max-width: 100%;
+      margin-bottom: 20px;
+    }
+  
+    .hero-image {
+      max-width: 80%;
+      margin: 0 auto;
+    }
+  }
+  
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes fadeInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
