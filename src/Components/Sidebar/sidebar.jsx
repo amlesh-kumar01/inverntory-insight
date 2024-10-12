@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './sidebar.css';
 import {  getParentGodowns, getGodownByParentId } from '../../Api/godownRequest.js';
 
-const Sidebar = () => {
+const Sidebar = ({setCurrentGodown}) => {
   const [locations, setLocations] = useState([]);
   const [expandedLocations, setExpandedLocations] = useState({});
   const [sublocations, setSublocations] = useState({});
@@ -85,7 +85,7 @@ const Sidebar = () => {
                           {(godowns[sublocation._id] || []).map(godown => (
                             <li
                               key={godown._id}
-                              onClick={() => console.log(`Display items for ${godown.name}`)}
+                              onClick={() => setCurrentGodown(godown)}
                               onContextMenu={(e) => handleRightClick(e, 'godown', godown._id)}
                               style={{ color: 'red' }}  
                             >

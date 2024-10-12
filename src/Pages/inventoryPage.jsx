@@ -1,21 +1,24 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Navbar from '../Components/Navbar/navbar';
 import Sidebar from '../Components/Sidebar/sidebar';
+import Item from "../Components/Items/items.jsx";
 import { AuthContext } from '../Contexts/authContext.js';
 import { Link } from 'react-router-dom';
 
-const InventoryPage = () => {
-  const {auth} = useContext(AuthContext);
 
+const InventoryPage = () => {
+  const { auth } = useContext(AuthContext);
+  const [currentGodown, setCurrentGodown] = useState({}); // Fix here
+  
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <div className="flex flex-1">
         {auth.isAuthenticated ? (
           <>
-            <Sidebar />
+            <Sidebar currentGodown={currentGodown} setCurrentGodown={setCurrentGodown} />
             <div className="flex-1 p-4">
-              {/* Main content goes here */}
+              <Item godown_id={currentGodown._id} />
             </div>
           </>
         ) : (
