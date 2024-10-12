@@ -60,3 +60,120 @@ export const editItem = async (item_id, updateData)=>{
   }
 }
 
+// Function to add a new item
+export const addItem = async (itemData) => {
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.post(`${url}/addItem`, itemData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 201) {
+      toast.success("Item created successfully.");
+      return response.data.item;
+    } else if (response.status === 400) {
+      toast.error(response.data.message || "Invalid data provided.");
+    } else if (response.status === 404) {
+      toast.error(response.data.message || "Item not found.");
+    } else if (response.status === 500) {
+      toast.error("Internal server error. Please try again later.");
+    } else {
+      toast.error(response.data.message || `Unexpected error: ${response.status}`);
+    }
+
+  } catch (error) {
+    console.error("Error creating item:", error);
+    toast.error("Network error: No response received.");
+  }
+};
+
+// Function to add quantity to an item
+export const addQuantity = async (item_id, quantity) => {
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.patch(`${url}/addQuantity/${item_id}`, { quantity }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      toast.success("Quantity added successfully.");
+      return response.data.item;
+    } else if (response.status === 400) {
+      toast.error(response.data.message || "Invalid data provided.");
+    } else if (response.status === 404) {
+      toast.error(response.data.message || "Item not found.");
+    } else if (response.status === 500) {
+      toast.error("Internal server error. Please try again later.");
+    } else {
+      toast.error(response.data.message || `Unexpected error: ${response.status}`);
+    }
+
+  } catch (error) {
+    console.error("Error adding quantity:", error);
+    toast.error("Network error: No response received.");
+  }
+};
+
+// Function to remove quantity from an item
+export const removeQuantity = async (item_id, quantity) => {
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.patch(`${url}/removeQuantity/${item_id}`, { quantity }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      toast.success("Quantity removed successfully.");
+      return response.data.item;
+    } else if (response.status === 400) {
+      toast.error(response.data.message || "Invalid data provided.");
+    } else if (response.status === 404) {
+      toast.error(response.data.message || "Item not found.");
+    } else if (response.status === 500) {
+      toast.error("Internal server error. Please try again later.");
+    } else {
+      toast.error(response.data.message || `Unexpected error: ${response.status}`);
+    }
+
+  } catch (error) {
+    console.error("Error removing quantity:", error);
+    toast.error("Network error: No response received.");
+  }
+};
+
+// Function to get all items by category
+export const getItemsByCategory = async (category) => {
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.get(`${url}/getItemsByCategory/${category}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data.items;
+    } else if (response.status === 400) {
+      toast.error(response.data.message || "Invalid category provided.");
+    } else if (response.status === 404) {
+      toast.error(response.data.message || "No items found for the given category.");
+    } else if (response.status === 500) {
+      toast.error("Internal server error. Please try again later.");
+    } else {
+      toast.error(response.data.message || `Unexpected error: ${response.status}`);
+    }
+
+  } catch (error) {
+    console.error("Error fetching items by category:", error);
+    toast.error("Network error: No response received.");
+  }
+};
+
+
+
