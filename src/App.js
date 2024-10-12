@@ -6,6 +6,9 @@ import Login from './Pages/loginPage.jsx';
 import InventoryPage from './Pages/inventoryPage.jsx';
 import { AuthProvider } from './Contexts/authContext.js';
 import { Toaster } from 'react-hot-toast';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
+
 
 // PageWrapper for handling transitions
 const PageWrapper = ({ children }) => {
@@ -29,7 +32,12 @@ const AppContent = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
-        <Route path="/inventory" element={<PageWrapper><InventoryPage /></PageWrapper>} />
+        <Route path="/inventory" element={
+          <PageWrapper>
+            <DndProvider backend={HTML5Backend}>
+              <InventoryPage />
+            </DndProvider>
+          </PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );

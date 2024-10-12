@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './sidebar.css';
-import {  getParentGodowns, getGodownByParentId } from '../../Api/godownRequest.js';
+import { getParentGodowns, getGodownByParentId } from '../../Api/godownRequest.js';
+import { useDrop } from 'react-dnd';
+import {editItem} from '../../Api/itemsRequest.js';
 
-const Sidebar = ({setCurrentGodown}) => {
+const Sidebar = ({ setCurrentGodown }) => {
   const [locations, setLocations] = useState([]);
   const [expandedLocations, setExpandedLocations] = useState({});
   const [sublocations, setSublocations] = useState({});
@@ -19,6 +21,11 @@ const Sidebar = ({setCurrentGodown}) => {
     };
     fetchLocations();
   }, []);
+
+  const collapseAll = () => {
+    setExpandedLocations({});
+    setExpandedSublocations({});
+  };
 
   const toggleExpand = async (type, parent_id) => {
     if (type === 'location') {
@@ -45,9 +52,31 @@ const Sidebar = ({setCurrentGodown}) => {
     console.log(`Right click on ${type}: ${name}`);
   };
 
-  const collapseAll = () => {
-    setExpandedLocations({});
-    setExpandedSublocations({});
+  
+
+  const handleDrop = (item, godown) => {
+    console.log(`Item ${item.name} dropped on Godown ${godown._id}`);
+    item.godown_id = godown._id; // Update the godown_id of the item
+    editItem(item._id, {godown_id: godown._id});
+    setCurrentGodown(godown); 
+  };
+
+  const DroppableGodown = ({ godown }) => {
+    const [, drop] = useDrop(() => ({
+      accept: 'ITEM',
+      drop: (item) => handleDrop(item, godown),
+    }));
+
+    return (
+      <li
+        ref={drop}
+        onClick={() => setCurrentGodown(godown)}
+        onContextMenu={(e) => handleRightClick(e, 'godown', godown._id)}
+        style={{ color: 'red' }}
+      >
+        {godown.name}
+      </li>
+    );
   };
 
   return (
@@ -63,7 +92,7 @@ const Sidebar = ({setCurrentGodown}) => {
               <div
                 onClick={() => toggleExpand('location', location._id)}
                 onContextMenu={(e) => handleRightClick(e, 'location', location._id)}
-                style={{ color: 'blue' }}  
+                style={{ color: 'blue' }}
                 aria-expanded={expandedLocations[location._id]}
               >
                 {location.name}
@@ -75,7 +104,7 @@ const Sidebar = ({setCurrentGodown}) => {
                       <div
                         onClick={() => toggleExpand('sublocation', sublocation._id)}
                         onContextMenu={(e) => handleRightClick(e, 'sublocation', sublocation._id)}
-                        style={{ color: 'green' }}  // Change text color for sublocations
+                        style={{ color: 'green' }}
                         aria-expanded={expandedSublocations[sublocation._id]}
                       >
                         {sublocation.name}
@@ -83,14 +112,7 @@ const Sidebar = ({setCurrentGodown}) => {
                       {expandedSublocations[sublocation._id] && (
                         <ul className="expanded">
                           {(godowns[sublocation._id] || []).map(godown => (
-                            <li
-                              key={godown._id}
-                              onClick={() => setCurrentGodown(godown)}
-                              onContextMenu={(e) => handleRightClick(e, 'godown', godown._id)}
-                              style={{ color: 'red' }}  
-                            >
-                              {godown.name}
-                            </li>
+                            <DroppableGodown key={godown._id} godown={godown} />
                           ))}
                         </ul>
                       )}

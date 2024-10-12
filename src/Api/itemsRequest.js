@@ -39,3 +39,24 @@ export const getItemsByGodownId = async (godown_id) => {
     errorResponse(error);
   }
 }
+
+export const editItem = async (item_id, updateData)=>{
+  try{
+    const token = Cookies.get("token");
+    const response = await axios.put(`${url}/editItem/${item_id}`, updateData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if(response.status === 200){
+      toast.success("Item updated successfully.");
+      return response.data.item;
+    } else if (response.status === 404) {
+      toast.error("Item not found.");
+    }
+  } catch (error) {
+    console.error("Error editing item:", error);
+    errorResponse(error);
+  }
+}
+
