@@ -1,19 +1,20 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
+import {jwtDecode} from "jwt-decode";
 import { toast, Toaster } from "react-hot-toast";
 import "./login.css";
 import AuthContext from "../../Contexts/authContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: "",  
+    email: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false); 
-  const { login ,logout} = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
 
+  const { login, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,43 +27,59 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); 
+    setLoading(true);
+
     try {
       const url = "http://localhost:8000";
       const response = await axios.post(`${url}/user/login`, formData);
+      const { token, success } = response.data;
 
-      const { token, success } = response.data;  
       if (success) {
-        toast.success('Login Successful!');
-        setTimeout(() => navigate("/"), 2000);
-      }
-      else{
+        toast.success("Login Successful!");
+        Cookies.set("token", token, { expires: 1, secure: true, sameSite: "strict" });
+        login(token);
+
+        // Set a timeout to navigate after a delay
+        setTimeout(() => navigate("/"), 1000);
+      } else {
         toast.error(response.message);
       }
-
-      Cookies.set("token", token, { expires: 1, secure: true, sameSite: "strict" });
-      login(token);
-
     } catch (error) {
       console.log(error.message);
-  
       if (error.response) {
-        // Error responses from backend
         const { message } = error.response.data;
-        toast.error(message || 'Invalid User Credentials! Try Again.');
+        toast.error(message || "Invalid User Credentials! Try Again.");
       } else if (error.request) {
-       
-        toast.error('Network error. Please check your internet connection.');
+        toast.error("Network error. Please check your internet connection.");
       } else {
-      
-        toast.error('An error occurred. Please try again.');
+        toast.error("An error occurred. Please try again.");
       }
-  
     } finally {
       setLoading(false);
-    
+    }
   };
-}
+
+  // Check token expiration and logout if expired
+  useEffect(() => {
+    const checkTokenExpiration = () => {
+      const token = Cookies.get("token");
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+
+        // If token is expired, logout the user
+        if (decodedToken.exp < currentTime) {
+          logout();
+          toast.error("Session expired. Please login again.");
+          navigate("/login");
+        }
+      }
+    };
+
+    // Check token expiration every 10 minute
+    const interval = setInterval(checkTokenExpiration, 600000);
+    return () => clearInterval(interval);
+  }, [logout, navigate]);
 
   return (
     <div className="login-container">
@@ -70,7 +87,7 @@ const Login = () => {
       <form className="login-form" onSubmit={handleSubmit}>
         <h2 className="login-title">Login</h2>
         <div className="login-form-group">
-          <label className="login-label" htmlFor="email">  
+          <label className="login-label" htmlFor="email">
             Email
           </label>
           <input
