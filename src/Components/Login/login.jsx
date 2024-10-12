@@ -12,7 +12,7 @@ const Login = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false); 
-  const { login } = useContext(AuthContext);
+  const { login ,logout} = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -36,17 +36,33 @@ const Login = () => {
         toast.success('Login Successful!');
         setTimeout(() => navigate("/"), 2000);
       }
+      else{
+        toast.error(response.message);
+      }
 
       Cookies.set("token", token, { expires: 1, secure: true, sameSite: "strict" });
       login(token);
 
     } catch (error) {
       console.log(error.message);
-      toast.error('Invalid User Credentials! Try Again.');
+  
+      if (error.response) {
+        // Error responses from backend
+        const { message } = error.response.data;
+        toast.error(message || 'Invalid User Credentials! Try Again.');
+      } else if (error.request) {
+       
+        toast.error('Network error. Please check your internet connection.');
+      } else {
+      
+        toast.error('An error occurred. Please try again.');
+      }
+  
     } finally {
       setLoading(false);
-    }
+    
   };
+}
 
   return (
     <div className="login-container">
