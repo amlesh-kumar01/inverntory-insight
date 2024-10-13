@@ -8,6 +8,7 @@ import { AuthProvider } from './Contexts/authContext.js';
 import { Toaster } from 'react-hot-toast';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
+import ErrorPage from './Pages/error.jsx';
 
 
 // PageWrapper for handling transitions
@@ -38,6 +39,7 @@ const AppContent = () => {
               <InventoryPage />
             </DndProvider>
           </PageWrapper>} />
+      <Route path="*" element={<PageWrapper><ErrorPage /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );
