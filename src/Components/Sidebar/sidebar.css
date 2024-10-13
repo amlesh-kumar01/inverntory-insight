@@ -3,8 +3,8 @@
   background-color: #f7f7f7;
   padding: 10px;
   border-right: 1px solid #ddd;
-  max-height: 100vh; /* Ensure the sidebar doesn't exceed the viewport height */
-  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: max-content;
+  overflow-y: auto; 
 }
 
 .sidebar h2 {

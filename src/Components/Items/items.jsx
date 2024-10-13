@@ -4,15 +4,19 @@ import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import './items.css';
 import { getItemsByGodownId } from '../../Api/itemsRequest.js';
 
-const DraggableItem = ({ item }) => {
+const DraggableItem = ({ item, index }) => {
   const [, drag] = useDrag(() => ({
     type: 'ITEM',
     item: item,
   }));
+
   return (
     <ContextMenuTrigger id={`item_${item._id}`}>
       <li ref={drag} className="item">
-        {item.name}
+        <div>{index + 1}</div>
+        <div>{item.name}</div>
+        <div>{item.brand}</div>
+        <div>{item.quantity}</div>
       </li>
       <ContextMenu id={`item_${item._id}`} className="context-menu">
         <MenuItem onClick={() => console.log('View Item')} className="context-menu-item">View Item</MenuItem>
@@ -25,7 +29,7 @@ const DraggableItem = ({ item }) => {
   );
 };
 
-const ItemComponent = ({ godown_id , name}) => {
+const ItemComponent = ({ godown_id , name }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -53,12 +57,18 @@ const ItemComponent = ({ godown_id , name}) => {
           <button onClick={() => console.log('Search Item')} className="item-component-button">Search Item</button>
         </div>
       </div>
+      <div className="item-grid-header">
+        <div>Sl No.</div>
+        <div>Name</div>
+        <div>Brand</div>
+        <div>Quantity</div>
+      </div>
       {loading ? (
         <div className="loader"></div>
       ) : (
         <ul>
-          {items.map(item => (
-            <DraggableItem key={item._id} item={item} />
+          {items.map((item, index) => (
+            <DraggableItem key={item._id} item={item} index={index} />
           ))}
         </ul>
       )}
