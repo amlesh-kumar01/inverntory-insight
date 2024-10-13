@@ -1,3 +1,4 @@
+
 # Inventory Insight
 
 ## Overview
@@ -31,8 +32,13 @@ Inventory Insight is a web application designed to efficiently manage and visual
 2. **Install the dependency**
    ```sh
    npm install --legacy-peer-deps
-3.**Build **
-  ```sh
-  npm run build
+3. **Build**
+   ```sh
+   npm run build
 
+## Login Credentials for Website
+- **Email**: [amleshkr396@gmail.com]
+- **Password**: [amleshkr396]
+```
 
+You can edit the README.md file directly in the GitHub editor or clone the repository, update the file locally, and push the changes.
