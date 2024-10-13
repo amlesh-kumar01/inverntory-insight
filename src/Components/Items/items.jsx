@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import './items.css';
-import { getItemsByGodownId, addQuantity, addItem, removeQuantity, deleteItem } from '../../Api/itemsRequest.js';
+import { getItemsByGodownId, addQuantity, removeQuantity, deleteItem } from '../../Api/itemsRequest.js';
+import AddItemForm from './addItemsForm.jsx';  // Import AddItemForm
 
 const DraggableItem = ({ item, index, refreshItems }) => {
   const [, drag] = useDrag(() => ({
@@ -18,7 +19,7 @@ const DraggableItem = ({ item, index, refreshItems }) => {
   const handleAddQuantity = async (id) => {
     const quantity = prompt('Enter the quantity to add:');
     if (quantity) {
-      await addQuantity(id,quantity);
+      await addQuantity(id, quantity);
       refreshItems();
     }
   };
@@ -50,10 +51,11 @@ const DraggableItem = ({ item, index, refreshItems }) => {
   );
 };
 
-const ItemComponent = ({ godown_id , name }) => {
+const ItemComponent = ({ godown_id, name }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAddItemForm, setShowAddItemForm] = useState(false);  // State for showing AddItemForm
 
   const fetchItems = async () => {
     setLoading(true);
@@ -75,38 +77,49 @@ const ItemComponent = ({ godown_id , name }) => {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleFormClose = () => {
+    setShowAddItemForm(false);
+    fetchItems(); // Refresh item list after closing form
+  };
+
   return (
     <div className="item-component">
-      <div className="item-component-header">
-        <h2 className='text-2xl font-bold text-gray-800'>{godown_id ? `Godown: ${name}` : 'Select Godown to see items'}</h2>
-        <div className="item-component-actions">
-          <button onClick={() => console.log('Add Item')} className="item-component-button text-5xl text-center">+</button>
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search items..."
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="search-button">Search</button>
-          </div>
-        </div>
-      </div>
-      <div className="item-grid-header">
-        <div>Sl No.</div>
-        <div>Name</div>
-        <div>Brand</div>
-        <div>Quantity</div>
-      </div>
-      {loading ? (
-        <div className="loader"></div>
+      {showAddItemForm ? (
+        <AddItemForm godownId={godown_id} onClose={handleFormClose} />
       ) : (
-        <ul>
-          {filteredItems.map((item, index) => (
-            <DraggableItem key={item._id} item={item} index={index} refreshItems={fetchItems} />
-          ))}
-        </ul>
+        <>
+          <div className="item-component-header">
+            <h2 className='text-2xl font-bold text-gray-800'>{godown_id ? `Godown: ${name}` : 'Select Godown to see items'}</h2>
+            <div className="item-component-actions">
+              <button onClick={() => setShowAddItemForm(true)} className="item-component-button text-5xl text-center">+</button> {/* Toggle AddItemForm */}
+              <div className="search-bar">
+                <input
+                  type="text"
+                  placeholder="Search items..."
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button className="search-button">Search</button>
+              </div>
+            </div>
+          </div>
+          <div className="item-grid-header">
+            <div>Sl No.</div>
+            <div>Name</div>
+            <div>Brand</div>
+            <div>Quantity</div>
+          </div>
+          {loading ? (
+            <div className="loader"></div>
+          ) : (
+            <ul>
+              {filteredItems.map((item, index) => (
+                <DraggableItem key={item._id} item={item} index={index} refreshItems={fetchItems} />
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );
