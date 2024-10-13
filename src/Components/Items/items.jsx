@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import './items.css';
 import { getItemsByGodownId, addQuantity, removeQuantity, deleteItem } from '../../Api/itemsRequest.js';
 import AddItemForm from './addItemsForm.jsx';  // Import AddItemForm
+import ItemModal from '../../utils/modals/viewItem.js'  // Import ItemModal
 
 const DraggableItem = ({ item, index, refreshItems }) => {
   const [, drag] = useDrag(() => ({
     type: 'ITEM',
     item: item,
   }));
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDelete = async (id) => {
     await deleteItem(id);
@@ -32,24 +35,36 @@ const DraggableItem = ({ item, index, refreshItems }) => {
     }
   };
 
+  const handleViewItem = () => {
+    setIsModalOpen(true);
+  };
+
   return (
-    <ContextMenuTrigger id={`item_${item._id}`}>
-      <li ref={drag} className="item">
-        <div>{index + 1}</div>
-        <div>{item.name}</div>
-        <div>{item.brand}</div>
-        <div>{item.quantity}</div>
-      </li>
+    <>
+      <ContextMenuTrigger id={`item_${item._id}`}>
+        <li ref={drag} className="item">
+          <div>{index + 1}</div>
+          <div>{item.name}</div>
+          <div>{item.brand}</div>
+          <div>{item.quantity}</div>
+        </li>
+      </ContextMenuTrigger>
       <ContextMenu id={`item_${item._id}`} className="context-menu">
-        <MenuItem onClick={() => console.log('View Item')} className="context-menu-item">View Item</MenuItem>
+        <MenuItem onClick={handleViewItem} className="context-menu-item">View Item</MenuItem>
         <MenuItem onClick={() => console.log('Edit Item')} className="context-menu-item">Edit Item</MenuItem>
         <MenuItem onClick={() => handleAddQuantity(item._id)} className="context-menu-item">Add Quantity</MenuItem>
         <MenuItem onClick={() => handleRemoveQuantity(item._id)} className="context-menu-item">Remove Quantity</MenuItem>
         <MenuItem onClick={() => handleDelete(item._id)} className="context-menu-item">Delete</MenuItem>
       </ContextMenu>
-    </ContextMenuTrigger>
+      {isModalOpen && <ItemModal item={item} onClose={() => setIsModalOpen(false)} />}
+    </>
   );
 };
+
+
+
+
+
 
 const ItemComponent = ({ godown_id, name }) => {
   const [items, setItems] = useState([]);
