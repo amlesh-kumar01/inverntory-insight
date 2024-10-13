@@ -93,7 +93,8 @@ export const addItem = async (itemData) => {
 export const addQuantity = async (item_id, quantity) => {
   try {
     const token = Cookies.get("token");
-    const response = await axios.patch(`${url}/addQuantity/${item_id}`, { quantity }, {
+    console.log("item_id", item_id);
+    const response = await axios.put(`${url}/addQuantity/${item_id}`, { quantity: `${quantity}`}, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -122,7 +123,7 @@ export const addQuantity = async (item_id, quantity) => {
 export const removeQuantity = async (item_id, quantity) => {
   try {
     const token = Cookies.get("token");
-    const response = await axios.patch(`${url}/removeQuantity/${item_id}`, { quantity }, {
+    const response = await axios.put(`${url}/removeQuantity/${item_id}`, { quantity:quantity }, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -174,6 +175,32 @@ export const getItemsByCategory = async (category) => {
     toast.error("Network error: No response received.");
   }
 };
+
+export const deleteItem = async (item_id) => {
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.delete(`${url}/deleteItem/${item_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      toast.success("Item deleted successfully.");
+      return response.data.item;
+    } else if (response.status === 404|| response.status===400) {
+      toast.error(response.data.message || "Item not found.");
+    } else if (response.status === 500) {
+      toast.error("Internal server error. Please try again later.");
+    } else {
+      toast.error(response.data.message || `Unexpected error: ${response.status}`);
+    }
+
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    toast.error("Network error: No response received.");
+  }
+}
 
 
 
