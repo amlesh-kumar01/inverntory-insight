@@ -30,7 +30,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const url = "http://localhost:8000";
+      const url = "https://tree-view-app-backend.onrender.com";
       const response = await axios.post(`${url}/user/login`, formData);
       const { token, success } = response.data;
 
