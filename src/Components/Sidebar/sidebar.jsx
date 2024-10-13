@@ -1,9 +1,18 @@
+// Sidebar.js
 import React, { useState, useEffect } from 'react';
 import './sidebar.css';
-import { getParentGodowns, getGodownByParentId } from '../../Api/godownRequest.js';
+import { getParentGodowns, getGodownByParentId,  } from '../../Api/godownRequest.js';
 import { useDrop } from 'react-dnd';
 import { editItem } from '../../Api/itemsRequest.js';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
+import AddLocationModal from '../../utils/modals/addLocation.js'; 
+import AddSublocationModal from '../../utils/modals/addSubLocationModal.js';
+import AddGodownModal from '../../utils/modals/addGodownModal.js';
+import DeleteModal from '../../utils/modals/deleteModal.js'
+import RenameModal from '../../utils/modals/renameModal.js';  
+import PlusIcon from '../../utils/PlusIcon.js'; 
+import { col } from 'framer-motion/client';
+
 
 const Sidebar = ({ setCurrentGodown }) => {
   const [locations, setLocations] = useState([]);
@@ -14,7 +23,18 @@ const Sidebar = ({ setCurrentGodown }) => {
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal open/close
+  const [isAddSublocationModalOpen, setIsAddSublocationModalOpen] = useState(false);
+  const [isAddGodownModalOpen, setIsAddGodownModalOpen] = useState(false);
+  const [newSublocationParentId, setNewSublocationParentId] = useState('');
+  const [newGodownParentId, setNewGodownParentId] = useState('');
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [renameId, setRenameId] = useState('');
+  const[deleteId, setDeleteId] = useState('');
 
+
+  //Fetch Parent Locations
   useEffect(() => {
     const fetchLocations = async () => {
       setLoading(true);
@@ -35,6 +55,7 @@ const Sidebar = ({ setCurrentGodown }) => {
     setExpandedSublocations({});
   };
 
+  // Toggle expand/collapse of locations and sublocations
   const toggleExpand = async (type, parent_id) => {
     if (type === 'location') {
       if (!expandedLocations[parent_id]) {
@@ -80,12 +101,36 @@ const Sidebar = ({ setCurrentGodown }) => {
           {godown.name}
         </li>
         <ContextMenu id={`godown_${godown._id}`} className="context-menu">
-          <MenuItem onClick={() => console.log('Rename Godown')} className="context-menu-item">Rename</MenuItem>
-          <MenuItem onClick={() => console.log('Delete Godown')} className="context-menu-item">Delete</MenuItem>
+          <MenuItem onClick={() => { setIsRenameModalOpen(true); setRenameId(godown._id)}} className="context-menu-item">Rename</MenuItem>
+          <MenuItem onClick={() => { setIsDeleteModalOpen(true);setDeleteId(godown._id)}} className="context-menu-item">Delete</MenuItem>
         </ContextMenu>
       </ContextMenuTrigger>
     );
   };
+
+  const handleAddLocation = (location) => {
+    console.log("Location entered: ", location);
+  };
+  const handleAddSublocation = (sublocation) => {
+    console.log("Sublocation entered:", sublocation);
+    console.log("Parent ID:", newSublocationParentId);
+    setNewSublocationParentId('');
+  }
+  const handleAddGodown = (godown) => {
+    console.log("Godown entered:", godown);
+    console.log("Parent ID:", newGodownParentId);
+    setNewGodownParentId('');
+  }
+  const handleRename = (name) => {  
+    console.log("nameId:", renameId);
+    console.log("Name entered:", name);
+    setRenameId('');
+  }
+  const handleDelete = () => {
+    console.log("DeleteId:", deleteId);
+    console.log("Delete clicked"); 
+    setDeleteId('');
+  }
 
   return (
     <div>
@@ -98,7 +143,10 @@ const Sidebar = ({ setCurrentGodown }) => {
         />
       )}
       <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <h2>Inventory Locations</h2>
+        <div className="flex items-center justify-between">
+          <h2>Inventory Locations</h2>
+          <PlusIcon onClick={() => setIsModalOpen(true)} />
+        </div>
         <button onClick={collapseAll} className="collapse-all-btn">Collapse All</button>
         {loading ? (
           <div className="loader"></div>
@@ -116,9 +164,9 @@ const Sidebar = ({ setCurrentGodown }) => {
                   </div>
                 </ContextMenuTrigger>
                 <ContextMenu id={`location_${location._id}`} className="context-menu">
-                  <MenuItem onClick={() => console.log('Add Sublocation')} className="context-menu-item">Add Sublocation</MenuItem>
-                  <MenuItem onClick={() => console.log('Rename Location')} className="context-menu-item">Rename</MenuItem>
-                  <MenuItem onClick={() => console.log('Delete Location')} className="context-menu-item">Delete</MenuItem>
+                  <MenuItem onClick={() => {setIsAddSublocationModalOpen(true) ;setNewSublocationParentId(location._id)}} className="context-menu-item">Add Sublocation</MenuItem>
+                  <MenuItem onClick={() => {setIsRenameModalOpen(true); setRenameId(location._id)}} className="context-menu-item">Rename</MenuItem>
+                  <MenuItem onClick={() => {setIsDeleteModalOpen(true);setDeleteId(location._id)}} className="context-menu-item">Delete</MenuItem>
                 </ContextMenu>
                 {expandedLocations[location._id] && (
                   <ul className="expanded">
@@ -134,9 +182,9 @@ const Sidebar = ({ setCurrentGodown }) => {
                           </div>
                         </ContextMenuTrigger>
                         <ContextMenu id={`sublocation_${sublocation._id}`} className="context-menu">
-                          <MenuItem onClick={() => console.log('Add Godown')} className="context-menu-item">Add Godown</MenuItem>
-                          <MenuItem onClick={() => console.log('Rename Sublocation')} className="context-menu-item">Rename</MenuItem>
-                          <MenuItem onClick={() => console.log('Delete Sublocation')} className="context-menu-item">Delete</MenuItem>
+                          <MenuItem onClick={() => {setIsAddGodownModalOpen(true); setNewGodownParentId(sublocation._id)}} className="context-menu-item">Add Godown</MenuItem>
+                          <MenuItem onClick={() =>{setIsRenameModalOpen(true); setRenameId(sublocation._id)} } className="context-menu-item">Rename</MenuItem>
+                          <MenuItem onClick={() => {setIsDeleteModalOpen(true);setDeleteId(sublocation._id)}} className="context-menu-item">Delete</MenuItem>
                         </ContextMenu>
                         {expandedSublocations[sublocation._id] && (
                           <ul className="expanded">
@@ -154,6 +202,31 @@ const Sidebar = ({ setCurrentGodown }) => {
           </ul>
         )}
       </div>
+      <AddLocationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAddLocation}
+      />
+      <AddSublocationModal
+        isOpen={isAddSublocationModalOpen}
+        onClose={() => setIsAddSublocationModalOpen(false)}
+        onSubmit={handleAddSublocation}
+      />
+      <AddGodownModal
+        isOpen={isAddGodownModalOpen}
+        onClose={() => setIsAddGodownModalOpen(false)}
+        onSubmit={handleAddGodown}
+      />
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+      />
+      <RenameModal
+        isOpen={isRenameModalOpen}
+        onClose={() => setIsRenameModalOpen(false)}
+        onSubmit={handleRename}
+      />
     </div>
   );
 };
