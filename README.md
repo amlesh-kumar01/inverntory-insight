@@ -1,4 +1,3 @@
-
 # Inventory Insight
 
 ## Overview
@@ -37,8 +36,8 @@ Inventory Insight is a web application designed to efficiently manage and visual
    npm run build
 
 ## Login Credentials for Website
-- **Email**: [amleshkr396@gmail.com]
-- **Password**: [amleshkr396]
-```
+- **Username**: [your-username]
+- **Password**: [your-password]
 
-You can edit the README.md file directly in the GitHub editor or clone the repository, update the file locally, and push the changes.
+## Video Overview
+To know more about the website, watch this [video](https://drive.google.com/open?id=1GzLZgxLtsdkZfgzgMp8HBX93IYSbKOC3&usp=drive_fs).
