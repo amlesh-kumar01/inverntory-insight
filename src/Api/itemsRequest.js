@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "react-hot-toast";
 
-const url = "https://tree-view-app-backend.onrender.com/items"||"http://localhost:8000/items";
+const url = "https://tree-view-app-backend.onrender.com/items";
 
 export const errorResponse = (error) => {
   if (error.response) {

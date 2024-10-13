@@ -2,7 +2,7 @@ import axios from "axios"; // Corrected import syntax
 import Cookies from "js-cookie";
 import { toast } from "react-hot-toast";
 
-const url = "https://tree-view-app-backend.onrender.com/godowns"||"http://localhost:8000/godowns";
+const url = "https://tree-view-app-backend.onrender.com/godowns"
 
 export const errorResponse = (error) => {
   if (error.response) {
