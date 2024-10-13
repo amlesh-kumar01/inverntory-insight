@@ -1,8 +1,10 @@
 .sidebar {
-  width: 250px;
+  width: 300px;
   background-color: #f7f7f7;
   padding: 10px;
   border-right: 1px solid #ddd;
+  max-height: 100vh; /* Ensure the sidebar doesn't exceed the viewport height */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .sidebar h2 {
@@ -23,36 +25,52 @@
 
 .sidebar li {
   margin-bottom: 5px;
-  cursor: pointer;
-}
-
-.sidebar li ul {
-  padding-left: 20px;
 }
 
 .sidebar li div {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
 }
 
-.sidebar li div::after {
-  content: '+';
-  margin-left: 10px;
+.sidebar li div span {
+  flex-grow: 1;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
 }
 
-.sidebar li div[aria-expanded='true']::after {
-  content: '-';
+.sidebar li div:hover span {
+  background-color: #e0e0e0;
 }
 
-.sidebar ul ul {
+.godown-item {
+  color: red;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding-left: 10px;
+}
+
+.godown-item:hover {
+  background-color: #e0e0e0;
+  cursor: pointer;
+}
+
+.location-item {
+  color: blue;
+}
+
+.sublocation-item {
+  color: green;
+}
+
+.expanded {
+  max-height: 2000px;
   transition: max-height 0.3s ease-in-out;
   overflow: hidden;
-  max-height: 0;
-}
-
-.sidebar ul ul.expanded {
-  max-height: 2000px; /* Set a max-height that can accommodate your nested list */
 }
 
 .loader {
@@ -69,3 +87,68 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* New mobile-specific styles */
+@media (max-width: 768px) {
+  .sidebar-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    
+    position: fixed;
+    top: 70px;
+    right:1%; /* Position at the top right corner */
+    z-index: 1000;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-width: none;
+    position: fixed;
+    top: 70px; /* Adjust top to avoid colliding with the navbar */
+    left: -100%; /* Hide sidebar initially */
+    transition: left 0.3s ease-in-out;
+  }
+
+  .sidebar.open {
+    left: 0; /* Show sidebar when open */
+  }
+}
+/* sidebar.css */
+
+.context-menu {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+  min-width: 150px;
+  padding: 10px 0;
+  z-index: 1000;
+}
+
+.context-menu-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-family: 'Arial, sans-serif';
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.context-menu-item:hover {
+  background-color: #f5f5f5;
+  color: #000;
+}
+
+.context-menu-divider {
+  height: 1px;
+  background-color: #e6e6e6;
+  margin: 5px 0;
+}
+
+/* Handle long press styles for mobile */
+@media (max-width: 768px) {
+  .context-menu {
+    position: absolute;
+  }
+}
+

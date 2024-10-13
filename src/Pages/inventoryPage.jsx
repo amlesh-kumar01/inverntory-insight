@@ -18,7 +18,7 @@ const InventoryPage = () => {
           <>
             <Sidebar currentGodown={currentGodown} setCurrentGodown={setCurrentGodown} />
             <div className="flex-1 p-4">
-              <Item godown_id={currentGodown._id} />
+              <Item godown_id={currentGodown._id} name={currentGodown.name} />
             </div>
           </>
         ) : (
