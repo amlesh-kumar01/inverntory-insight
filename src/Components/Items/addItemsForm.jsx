@@ -6,15 +6,11 @@ import { toast } from 'react-hot-toast'; // Import toast for notifications
 const AddItemForm = ({ godownId, onClose }) => {  // Taking godownId and onClose as props
   const [itemData, setItemData] = useState({
     name: '',
-    quantity: 0,
+    quantity: 1,
     category: '',
-    price: 0,
+    price: 1,
     brand: '',
-    attributes: {
-      type: '',
-      material: '',
-      warranty_years: ''
-    },
+    attributes: [], // Dynamic attributes as an array for key-value pair input
     image_url: ''
   });
 
@@ -25,16 +21,25 @@ const AddItemForm = ({ godownId, onClose }) => {  // Taking godownId and onClose
     setItemData({ ...itemData, [name]: value });
   };
 
-  const handleAttributeChange = (e) => {
-    const { name, value } = e.target;
-    setItemData({ ...itemData, attributes: { ...itemData.attributes, [name]: value } });
+  const handleAttributeChange = (index, key, value) => {
+    const updatedAttributes = [...itemData.attributes];
+    updatedAttributes[index] = { ...updatedAttributes[index], [key]: value };
+    setItemData({ ...itemData, attributes: updatedAttributes });
+  };
+
+  const addAttribute = () => {
+    setItemData({ ...itemData, attributes: [...itemData.attributes, { key: '', value: '' }] });
+  };
+
+  const removeAttribute = (index) => {
+    const updatedAttributes = [...itemData.attributes];
+    updatedAttributes.splice(index, 1);
+    setItemData({ ...itemData, attributes: updatedAttributes });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log('itemData', itemData);
-    console.log('godownId', godownId);
 
     if (!godownId) {
       toast.error('Select Godown to add item');
@@ -42,14 +47,35 @@ const AddItemForm = ({ godownId, onClose }) => {  // Taking godownId and onClose
       return;
     }
 
+    // Check if at least one attribute is provided
+    const hasValidAttribute = itemData.attributes.some(attr => attr.key && attr.value);
+    if (!hasValidAttribute) {
+      toast.error('At least one attribute must be provided with both key and value.');
+      setLoading(false);
+      return;
+    }
+
+    // Transform the attributes array into an object
+    const attributesObject = itemData.attributes.reduce((acc, attr) => {
+      if (attr.key) acc[attr.key] = attr.value; // Only add if a key is provided
+      return acc;
+    }, {});
+
     const newItemData = {
       ...itemData,
-      godown_id: godownId
+      godown_id: godownId,
+      attributes: attributesObject // Pass the object, not the array
     };
-
-    await addItem(newItemData);
-    setLoading(false);
-    onClose(); // Close the form after successful submission
+    console.log(newItemData);
+    try {
+      await addItem(newItemData);
+      toast.success('Item added successfully');
+      onClose(); // Close the form after successful submission
+    } catch (error) {
+      toast.error('Failed to add item. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -85,11 +111,26 @@ const AddItemForm = ({ godownId, onClose }) => {  // Taking godownId and onClose
         </div>
         <div className="form-group">
           <label>Attributes</label>
-          <div className="attribute-group">
-            <input type="text" name="type" placeholder="Type" value={itemData.attributes.type} onChange={handleAttributeChange} required />
-            <input type="text" name="material" placeholder="Material" value={itemData.attributes.material} onChange={handleAttributeChange} required />
-            <input type="text" name="warranty_years" placeholder="Warranty Years" value={itemData.attributes.warranty_years} onChange={handleAttributeChange} required />
-          </div>
+          {itemData.attributes.map((attr, index) => (
+            <div key={index} className="attribute-group">
+              <input
+                type="text"
+                placeholder="Key"
+                value={attr.key}
+                onChange={(e) => handleAttributeChange(index, 'key', e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Value"
+                value={attr.value}
+                onChange={(e) => handleAttributeChange(index, 'value', e.target.value)}
+                required
+              />
+              <button type="button" onClick={() => removeAttribute(index)}>Remove</button>
+            </div>
+          ))}
+          <button type="button" onClick={addAttribute}>Add Attribute</button>
         </div>
         <button type="submit" disabled={loading}>Submit</button>
       </form>
