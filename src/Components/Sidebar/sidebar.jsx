@@ -1,7 +1,7 @@
 // Sidebar.js
 import React, { useState, useEffect } from 'react';
 import './sidebar.css';
-import { getParentGodowns, getGodownByParentId,  } from '../../Api/godownRequest.js';
+import { getParentGodowns, getGodownByParentId,addGodown,deleteGodown,renameGodown  } from '../../Api/godownRequest.js';
 import { useDrop } from 'react-dnd';
 import { editItem } from '../../Api/itemsRequest.js';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
@@ -10,8 +10,7 @@ import AddSublocationModal from '../../utils/modals/addSubLocationModal.js';
 import AddGodownModal from '../../utils/modals/addGodownModal.js';
 import DeleteModal from '../../utils/modals/deleteModal.js'
 import RenameModal from '../../utils/modals/renameModal.js';  
-import PlusIcon from '../../utils/PlusIcon.js'; 
-import { col } from 'framer-motion/client';
+import PlusIcon from '../../utils/PlusIcon.js';
 
 
 const Sidebar = ({ setCurrentGodown }) => {
@@ -34,14 +33,15 @@ const Sidebar = ({ setCurrentGodown }) => {
   const[deleteId, setDeleteId] = useState('');
 
 
+  const fetchLocations = async () => {
+    setLoading(true);
+    const locationData = await getParentGodowns();
+    setLocations(locationData || []);
+    setLoading(false);
+  };
   //Fetch Parent Locations
   useEffect(() => {
-    const fetchLocations = async () => {
-      setLoading(true);
-      const locationData = await getParentGodowns();
-      setLocations(locationData || []);
-      setLoading(false);
-    };
+    
     fetchLocations();
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -108,28 +108,49 @@ const Sidebar = ({ setCurrentGodown }) => {
     );
   };
 
-  const handleAddLocation = (location) => {
-    console.log("Location entered: ", location);
+  const handleAddLocation =  async (location) => {
+    setLoading(true);
+    await addGodown({ name: location });
+    setLoading(false);
+    fetchLocations();
   };
-  const handleAddSublocation = (sublocation) => {
-    console.log("Sublocation entered:", sublocation);
-    console.log("Parent ID:", newSublocationParentId);
+  const handleAddSublocation = async (sublocation) => {
+    // console.log("Sublocation entered:", sublocation);
+    // console.log("Parent ID:", newSublocationParentId);
+    setLoading(true);
+    await addGodown({ name: sublocation, parent_godown: newSublocationParentId });
+    setLoading(false);
+    collapseAll();
     setNewSublocationParentId('');
   }
-  const handleAddGodown = (godown) => {
-    console.log("Godown entered:", godown);
-    console.log("Parent ID:", newGodownParentId);
+  const handleAddGodown = async (godown) => {
+    // console.log("Godown entered:", godown);
+    // console.log("Parent ID:", newGodownParentId);
+    setLoading(true);
+    await addGodown({ name: godown, parent_godown: newGodownParentId });
+    setLoading(false);
+    collapseAll();
     setNewGodownParentId('');
   }
-  const handleRename = (name) => {  
+  const handleRename = async(name) => {  
     console.log("nameId:", renameId);
     console.log("Name entered:", name);
+    setLoading(true);
+    await renameGodown(renameId, name);
+    fetchLocations();
+    collapseAll();
+    setLoading(false);    
     setRenameId('');
   }
-  const handleDelete = () => {
+  const handleDelete = async() => {
     console.log("DeleteId:", deleteId);
     console.log("Delete clicked"); 
-    setDeleteId('');
+    setLoading(true);
+    await deleteGodown(deleteId);
+    fetchLocations();
+    setLoading(false);
+    collapseAll()
+    setDeleteId('');;
   }
 
   return (
@@ -156,7 +177,7 @@ const Sidebar = ({ setCurrentGodown }) => {
               <li key={location._id}>
                 <ContextMenuTrigger id={`location_${location._id}`}>
                   <div
-                    onClick={() => toggleExpand('location', location._id)}
+                    onClick={() => {toggleExpand('location', location._id);} }
                     className="location-item"
                     aria-expanded={expandedLocations[location._id]}
                   >
@@ -174,7 +195,7 @@ const Sidebar = ({ setCurrentGodown }) => {
                       <li key={sublocation._id}>
                         <ContextMenuTrigger id={`sublocation_${sublocation._id}`}>
                           <div
-                            onClick={() => toggleExpand('sublocation', sublocation._id)}
+                            onClick={() => {toggleExpand('sublocation', sublocation._id);setCurrentGodown(sublocation);}}
                             className="sublocation-item"
                             aria-expanded={expandedSublocations[sublocation._id]}
                           >
