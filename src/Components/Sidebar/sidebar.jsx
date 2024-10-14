@@ -164,11 +164,11 @@ const Sidebar = ({ setCurrentGodown }) => {
         />
       )}
       <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between font-bold ">
           <h2>Inventory Locations</h2>
           <PlusIcon onClick={() => setIsModalOpen(true)} />
         </div>
-        <button onClick={collapseAll} className="collapse-all-btn">Collapse All</button>
+        <button onClick={collapseAll} className="collapse-all-btn border border-r-2 ">Collapse All</button>
         {loading ? (
           <div className="loader"></div>
         ) : (
@@ -181,7 +181,7 @@ const Sidebar = ({ setCurrentGodown }) => {
                     className="location-item"
                     aria-expanded={expandedLocations[location._id]}
                   >
-                    {expandedLocations[location._id] ? '▼' : '➤'}<span>{location.name}</span>
+                    {expandedLocations[location._id] ? '▼' : '➤'}<span className='location'>{location.name}</span>
                   </div>
                 </ContextMenuTrigger>
                 <ContextMenu id={`location_${location._id}`} className="context-menu">
@@ -199,7 +199,7 @@ const Sidebar = ({ setCurrentGodown }) => {
                             className="sublocation-item"
                             aria-expanded={expandedSublocations[sublocation._id]}
                           >
-                            {expandedSublocations[sublocation._id] ? '▼' : '➤'}<span>{sublocation.name}</span>
+                            {expandedSublocations[sublocation._id] ? '▼' : '➤'}<span className='sublocation-span'>{sublocation.name}</span>
                           </div>
                         </ContextMenuTrigger>
                         <ContextMenu id={`sublocation_${sublocation._id}`} className="context-menu">

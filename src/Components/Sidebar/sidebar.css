@@ -2,14 +2,22 @@
   width: 300px;
   background-color: #f7f7f7;
   padding: 10px;
-  border-right: 1px solid #ddd;
-  max-height: max-content;
+  border: 1px solid #ddd;
+  border-radius:10;
+  height: calc(100vh - 70px); 
   overflow-y: auto; 
+  padding-bottom: 5px;
+  scroll-behavior: smooth;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none; 
 }
 
 .sidebar h2 {
   font-size: 1.5em;
   margin-bottom: 10px;
+  
 }
 
 .sidebar button {
@@ -20,7 +28,7 @@
 
 .sidebar ul {
   list-style: none;
-  padding-left: 20px;
+  padding:5px;
 }
 
 .sidebar li {
@@ -32,31 +40,64 @@
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  color: rgb(53, 85, 90);
 }
 
-.sidebar li div span {
-  flex-grow: 1;
+.location{
+  color:rgb(49, 132, 200);
+  display: block;
+  width: 245px; /* Adjust width to account for padding */
   padding: 5px;
   border: 1px solid #ddd;
   border-radius: 3px;
   background-color: #fff;
   transition: background-color 0.3s ease;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  margin:2px;
+  height: max-content
+}
+.sidebar li div span:hover {
+  transform: scale(1.03);
 }
 
 .sidebar li div:hover span {
   background-color: #e0e0e0;
 }
+.sublocation-span{
+  color:rgb(23, 160, 206);
+  height:50px;
+  display: block;
+  border: 1px solid #ddd;
+  height:max-content;
+  width:200px;
+  border-radius: 5px;
+  padding-left:10px;
+  margin-bottom:3px;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
 
 .godown-item {
-  color: red;
+  color: rgb(12, 164, 239);
   border: 1px solid #ddd;
   background-color: #fff;
   padding-left: 10px;
+  text-decoration: none;
+  width: 150px;
+  border-radius: 5px;
+  margin:0px;
+  margin-left:15px;
+  margin-bottom:1px;
 }
 
 .godown-item:hover {
   background-color: #e0e0e0;
   cursor: pointer;
+  transform: scale(1.03);
+
 }
 
 .location-item {
@@ -113,6 +154,10 @@
 
   .sidebar.open {
     left: 0; /* Show sidebar when open */
+  }
+
+  .sidebar li div span{
+    width: 300px;
   }
 }
 /* sidebar.css */

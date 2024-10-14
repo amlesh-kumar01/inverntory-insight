@@ -1,76 +1,107 @@
-import React, { useState,useEffect } from 'react';
-import { useDrag } from 'react-dnd';
-import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
-import './items.css';
-import { getItemsByGodownId, addQuantity, removeQuantity, deleteItem } from '../../Api/itemsRequest.js';
-import AddItemForm from './addItemsForm.jsx';  // Import AddItemForm
-import ItemModal from '../../utils/modals/viewItem.js'  // Import ItemModal
+import React, { useState, useEffect } from "react";
+import { useDrag } from "react-dnd";
+// import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
+import "./items.css";
+import {
+  getItemsByGodownId,
+  addQuantity,
+  removeQuantity,
+  deleteItem,
+} from "../../Api/itemsRequest.js";
+import AddItemForm from "./addItemsForm.jsx";
+import ItemModal from "../../utils/modals/viewItem.js";
+import { Menu, MenuItem } from "@mui/material";
 
 const DraggableItem = ({ item, index, refreshItems }) => {
   const [, drag] = useDrag(() => ({
-    type: 'ITEM',
+    type: "ITEM",
     item: item,
   }));
 
+  const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleDelete = async (id) => {
+    handleClose();
     await deleteItem(id);
     refreshItems();
   };
 
   const handleAddQuantity = async (id) => {
-    const quantity = prompt('Enter the quantity to add:');
+    const quantity = prompt("Enter the quantity to add:");
     if (quantity) {
+      handleClose();
       await addQuantity(id, quantity);
       refreshItems();
     }
   };
 
   const handleRemoveQuantity = async (id) => {
-    const quantity = prompt('Enter the quantity to remove:');
+    const quantity = prompt("Enter the quantity to remove:");
     if (quantity) {
+      handleClose();
       await removeQuantity(id, quantity);
       refreshItems();
     }
   };
 
   const handleViewItem = () => {
+    handleClose();
     setIsModalOpen(true);
   };
 
   return (
     <>
-      <ContextMenuTrigger id={`item_${item._id}`}>
-        <li ref={drag} className="item">
-          <div>{index + 1}</div>
-          <div>{item.name}</div>
-          <div>{item.brand}</div>
-          <div>{item.quantity}</div>
-        </li>
-      </ContextMenuTrigger>
-      <ContextMenu id={`item_${item._id}`} className="context-menu">
-        <MenuItem onClick={handleViewItem} className="context-menu-item">View Item</MenuItem>
-        <MenuItem onClick={() => console.log('Edit Item')} className="context-menu-item">Edit Item</MenuItem>
-        <MenuItem onClick={() => handleAddQuantity(item._id)} className="context-menu-item">Add Quantity</MenuItem>
-        <MenuItem onClick={() => handleRemoveQuantity(item._id)} className="context-menu-item">Remove Quantity</MenuItem>
-        <MenuItem onClick={() => handleDelete(item._id)} className="context-menu-item">Delete</MenuItem>
-      </ContextMenu>
-      {isModalOpen && <ItemModal item={item} onClose={() => setIsModalOpen(false)} />}
+      <li
+        ref={drag}
+        onContextMenu={handleContextMenu}
+        onTouchStart={handleContextMenu} // For mobile devices
+        className="item"
+        style={{ cursor: "context-menu" }} // Optional for context menu indication
+      >
+        <div>{index + 1}</div>
+        <div>{item.name}</div>
+        <div>{item.brand}</div>
+        <div>{item.quantity}</div>
+      </li>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        classes={{ paper: "bg-white shadow-lg rounded-lg" }} // Custom styling
+      >
+        <MenuItem onClick={handleViewItem}>View Item</MenuItem>
+        <MenuItem onClick={() => console.log("Edit Item")}>Edit Item</MenuItem>
+        <MenuItem onClick={() => handleAddQuantity(item._id)}>
+          Add Quantity
+        </MenuItem>
+        <MenuItem onClick={() => handleRemoveQuantity(item._id)}>
+          Remove Quantity
+        </MenuItem>
+        <MenuItem onClick={() => handleDelete(item._id)}>Delete</MenuItem>
+      </Menu>
+
+      {isModalOpen && (
+        <ItemModal item={item} onClose={() => setIsModalOpen(false)} />
+      )}
     </>
   );
 };
 
-
-
-
-
-
 const ItemComponent = ({ godown_id, name }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showAddItemForm, setShowAddItemForm] = useState(false);  // State for showing AddItemForm
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showAddItemForm, setShowAddItemForm] = useState(false); // State for showing AddItemForm
 
   const fetchItems = async () => {
     setLoading(true);
@@ -88,7 +119,7 @@ const ItemComponent = ({ godown_id, name }) => {
     fetchItems();
   }, [godown_id]);
 
-  const filteredItems = items.filter(item =>
+  const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -104,9 +135,17 @@ const ItemComponent = ({ godown_id, name }) => {
       ) : (
         <>
           <div className="item-component-header">
-            <h2 className='text-2xl font-bold text-gray-800'>{godown_id ? `Godown: ${name}` : 'Select Godown to see items'}</h2>
+            <h2 className="   font-bold text-[#2866cb]">
+              {godown_id ? `Godown: ${name}` : "Select Godown to see items"}
+            </h2>
             <div className="item-component-actions">
-              <button onClick={() => setShowAddItemForm(true)} className="item-component-button text-5xl text-center">+</button> {/* Toggle AddItemForm */}
+              <button
+                onClick={() => setShowAddItemForm(true)}
+                className="item-component-button text-4xl text-center p-2"
+                title="Add Item" // This will show "Add Item" text on hover
+              >
+                +
+              </button>
               <div className="search-bar">
                 <input
                   type="text"
@@ -130,7 +169,12 @@ const ItemComponent = ({ godown_id, name }) => {
           ) : (
             <ul>
               {filteredItems.map((item, index) => (
-                <DraggableItem key={item._id} item={item} index={index} refreshItems={fetchItems} />
+                <DraggableItem
+                  key={item._id}
+                  item={item}
+                  index={index}
+                  refreshItems={fetchItems}
+                />
               ))}
             </ul>
           )}
