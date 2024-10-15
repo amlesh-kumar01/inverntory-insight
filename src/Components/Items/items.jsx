@@ -6,6 +6,7 @@ import {
   addQuantity,
   removeQuantity,
   deleteItem,
+  searchItems,
 } from "../../Api/itemsRequest.js";
 import AddItemForm from "./addItemsForm.jsx";
 import ItemModal from "../../utils/modals/viewItem.js";
@@ -142,6 +143,19 @@ const ItemComponent = ({ godown_id, name }) => {
     fetchItems(); 
   };
 
+  const handleSearch = async () => {
+    setLoading(true);
+    if (!searchTerm) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
+    const searchData = await searchItems(searchTerm);
+    setItems(searchData || []);
+    setSearchTerm("");
+    setLoading(false);
+  }
+
   return (
     <div className="item-component">
       {showAddItemForm ? (
@@ -168,7 +182,7 @@ const ItemComponent = ({ godown_id, name }) => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <button className="search-button">Search</button>
+                <button className="search-button" onClick={handleSearch}>Search</button>
               </div>
             </div>
           </div>

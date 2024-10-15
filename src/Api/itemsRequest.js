@@ -202,5 +202,34 @@ export const deleteItem = async (item_id) => {
   }
 }
 
+export const searchItems = async (searchQuery) => {
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.get(`${url}/searchItems/${searchQuery}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      toast.success("Items fetched successfully.");
+      return response.data.items;
+    } else if (response.status === 404) {
+      toast.error(response.data.message || "No items found for the given search query.");
+      return;
+    } else if (response.status === 500) {
+      toast.error("Internal server error. Please try again later.");
+      return;
+    } else {
+      toast.error(response.data.message || `Unexpected error: ${response.status}`);
+      return;
+    }
+
+  } catch (error) {
+    console.error("Error fetching items by search query:", error);
+    toast.error("No Items Found.");
+  }
+}
+
 
 
