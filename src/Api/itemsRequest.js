@@ -130,16 +130,24 @@ export const removeQuantity = async (item_id, quantity) => {
     });
 
     if (response.status === 200) {
+      if(!response.data.success){
+        toast.error(response.data.message || "Insufficient quantity to remove.");
+        return ;
+      }
       toast.success("Quantity removed successfully.");
       return response.data.item;
     } else if (response.status === 400) {
       toast.error(response.data.message || "Invalid data provided.");
+      return;
     } else if (response.status === 404) {
       toast.error(response.data.message || "Item not found.");
+      return;
     } else if (response.status === 500) {
       toast.error("Internal server error. Please try again later.");
+      return;
     } else {
       toast.error(response.data.message || `Unexpected error: ${response.status}`);
+      return;
     }
 
   } catch (error) {
