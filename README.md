@@ -19,9 +19,6 @@ Inventory Insight is a web application designed to efficiently manage and visual
   - **Sub-Godowns**: Nested within godowns.
 - **Items**: Products stored within sections, with details like item_id, name, quantity, category, status, godown_id, price, brand, attributes, and image_url.
 
-### Deployment
-- **Dockerization**: The system is Dockerized for easier deployment.
-- **Hosting**: Deployed on Vercel for seamless access.
 
 ## Setup and Installation
 1. **Clone the Repository**:
@@ -36,8 +33,26 @@ Inventory Insight is a web application designed to efficiently manage and visual
    npm run build
 
 ## Login Credentials for Website
-- **Username**: [your-username]
-- **Password**: [your-password]
+- **Email**: [amleshkr396@gmail.com]
+- **Password**: [amleshkr396]
+### Please wait for few minutes, Login may take time for sending first response
+
+## Add the .env file to run backend
+- **MONGO_URI**: Paste the database connection url
+- **JWT_SECRET**: secret
+
+
+## Link to download using git clone
+- [backend link](https://github.com/amlesh-kumar01/tree-view-app-backend.git)
 
 ## Video Overview
 To know more about the website, watch this [video](https://drive.google.com/open?id=1GzLZgxLtsdkZfgzgMp8HBX93IYSbKOC3&usp=drive_fs).
+
+## How to use Inventory Insight
+- Without login Inventory insight can't be used
+- First login using the credentials given above and the visualize the inventory
+- You can add, remove, add quantity, remove quantity of items and do many more things .
+- Right click or Long Press to see options to view, add , rename, etc items.
+- You can search items present using the search box provided above.
+
+
