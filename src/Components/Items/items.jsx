@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useDrag } from "react-dnd";
-// import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import "./items.css";
 import {
   getItemsByGodownId,
@@ -17,7 +16,7 @@ const DraggableItem = ({ item, index, refreshItems }) => {
     type: "ITEM",
     item: item,
   }));
-
+  const [touchStart, setTouchStart] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleContextMenu = (event) => {
@@ -57,15 +56,30 @@ const DraggableItem = ({ item, index, refreshItems }) => {
     handleClose();
     setIsModalOpen(true);
   };
+  const handleLongPress = (event) => {
+    setAnchorEl(event.currentTarget);
+  }
+  const onTouchStart = (event) => {
+    setTouchStart(Date.now());
+  };
 
+  const onTouchEnd = (event) => {
+    if (Date.now() - touchStart > 500) {
+      handleLongPress(event);
+    }
+  }
+  
+
+  
   return (
     <>
       <li
         ref={drag}
         onContextMenu={handleContextMenu}
-        onTouchStart={handleContextMenu} // For mobile devices
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
         className="item"
-        style={{ cursor: "context-menu" }} // Optional for context menu indication
+        style={{ cursor: "context-menu" }} 
       >
         <div>{index + 1}</div>
         <div>{item.name}</div>
@@ -77,7 +91,7 @@ const DraggableItem = ({ item, index, refreshItems }) => {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
-        classes={{ paper: "bg-white shadow-lg rounded-lg" }} // Custom styling
+        classes={{ paper: "bg-white shadow-lg rounded-lg" }} 
       >
         <MenuItem onClick={handleViewItem}>View Item</MenuItem>
         <MenuItem onClick={() => console.log("Edit Item")}>Edit Item</MenuItem>
@@ -101,7 +115,7 @@ const ItemComponent = ({ godown_id, name }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showAddItemForm, setShowAddItemForm] = useState(false); // State for showing AddItemForm
+  const [showAddItemForm, setShowAddItemForm] = useState(false); 
 
   const fetchItems = async () => {
     setLoading(true);
@@ -125,7 +139,7 @@ const ItemComponent = ({ godown_id, name }) => {
 
   const handleFormClose = () => {
     setShowAddItemForm(false);
-    fetchItems(); // Refresh item list after closing form
+    fetchItems(); 
   };
 
   return (
@@ -142,7 +156,7 @@ const ItemComponent = ({ godown_id, name }) => {
               <button
                 onClick={() => setShowAddItemForm(true)}
                 className="item-component-button text-4xl text-center p-2"
-                title="Add Item" // This will show "Add Item" text on hover
+                title="Add Item" 
               >
                 +
               </button>

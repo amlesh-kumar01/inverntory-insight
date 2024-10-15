@@ -59,18 +59,18 @@ const Sidebar = ({ setCurrentGodown }) => {
   const toggleExpand = async (type, parent_id) => {
     if (type === 'location') {
       if (!expandedLocations[parent_id]) {
-        setLoading(true);
+        // setLoading(true);
         const sublocationData = await getGodownByParentId(parent_id);
         setSublocations({ ...sublocations, [parent_id]: sublocationData });
-        setLoading(false);
+        // setLoading(false);
       }
       setExpandedLocations({ ...expandedLocations, [parent_id]: !expandedLocations[parent_id] });
     } else if (type === 'sublocation') {
       if (!expandedSublocations[parent_id]) {
-        setLoading(true);
+        // setLoading(true);
         const godownData = await getGodownByParentId(parent_id);
         setGodowns({ ...godowns, [parent_id]: godownData });
-        setLoading(false);
+        // setLoading(false);
       }
       setExpandedSublocations({ ...expandedSublocations, [parent_id]: !expandedSublocations[parent_id] });
     }
@@ -109,46 +109,50 @@ const Sidebar = ({ setCurrentGodown }) => {
   };
 
   const handleAddLocation =  async (location) => {
-    setLoading(true);
+    // setLoading(true);
     await addGodown({ name: location });
-    setLoading(false);
+    // setLoading(false);
     fetchLocations();
   };
   const handleAddSublocation = async (sublocation) => {
     // console.log("Sublocation entered:", sublocation);
     // console.log("Parent ID:", newSublocationParentId);
-    setLoading(true);
+    // setLoading(true);
     await addGodown({ name: sublocation, parent_godown: newSublocationParentId });
-    setLoading(false);
-    collapseAll();
+    // setLoading(false);
+    const sublocationData = await getGodownByParentId(newSublocationParentId);
+    setSublocations({ ...sublocations, [newSublocationParentId]: sublocationData });
+    // collapseAll();
     setNewSublocationParentId('');
   }
   const handleAddGodown = async (godown) => {
     // console.log("Godown entered:", godown);
     // console.log("Parent ID:", newGodownParentId);
-    setLoading(true);
+    // setLoading(true);
     await addGodown({ name: godown, parent_godown: newGodownParentId });
-    setLoading(false);
-    collapseAll();
+    const godownData = await getGodownByParentId(newGodownParentId);
+    setGodowns({ ...godowns, [newGodownParentId]: godownData });
+    // collapseAll();
+    // setLoading(false);
     setNewGodownParentId('');
   }
   const handleRename = async(name) => {  
     console.log("nameId:", renameId);
     console.log("Name entered:", name);
-    setLoading(true);
+    // setLoading(true);
     await renameGodown(renameId, name);
     fetchLocations();
     collapseAll();
-    setLoading(false);    
+    // setLoading(false);    
     setRenameId('');
   }
   const handleDelete = async() => {
     console.log("DeleteId:", deleteId);
     console.log("Delete clicked"); 
-    setLoading(true);
+    // setLoading(true);
     await deleteGodown(deleteId);
     fetchLocations();
-    setLoading(false);
+    // setLoading(false);
     collapseAll()
     setDeleteId('');;
   }
